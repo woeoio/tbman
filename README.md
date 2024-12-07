@@ -32,7 +32,7 @@ TBMAN is built with a modular and component-based design, enabling unlimited ext
 2. Alternatively, you can directly include `TBMANLIB` in your project using the package manager in the TwinBasic IDE **(recommended)**.  
 
 **Usage**  
-Refer to the demo source code or read the documentation at [https://doc.twinbasic.com.cn/](https://doc.twinbasic.com.cn/).  
+- Refer to the demo source code or read the documentation at [https://doc.twinbasic.com.cn/](https://doc.twinbasic.com.cn/).  
 
 ---
 

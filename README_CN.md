@@ -32,7 +32,7 @@ TBMAN 采用构件化和模块化设计，可进行无界制的扩充，将会�
 2. 另外一个可选方式, 是直接从 twinbasic ide 的 包管理器 引入 TBMANLIB 到项目 `推荐`。
 
 **使用**
-参考demo源代码，或者阅读文档 [https://doc.twinbasic.com.cn/](https://doc.twinbasic.com.cn/)
+- 参考demo源代码，或者阅读文档 [https://doc.twinbasic.com.cn/](https://doc.twinbasic.com.cn/)
 ---
 
 ## 🕵️‍♂️ 功能列表
