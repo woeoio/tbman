@@ -6,6 +6,11 @@ This project includes the following third-party components:
    Copyright (c) 2013 [Tim Hall]
    From: https://github.com/VBA-tools/VBA-JSON
 
-2. [项目名称2] - Apache 2.0 License
-   Copyright (c) 2023 [版权所有者2]
-   From: https://github.com/example/project2
+2. [VbWebserver - HttpMimeType] - MIT License
+   Copyright (c) 2017 Jason Peter Brown <jason@bitspaces.com>
+   From: <? Please tell me ?>
+
+3. [cTimer] - Free
+   Author:  David Zimmer
+   Date:  Oct 16th 2003
+   Site:  http://sandsprite.com
