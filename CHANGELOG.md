@@ -1,4 +1,6 @@
 
+### 2024-12-30 v1.0.18
+- [*] cJson .Items() assign
 
 ### 2024-12-30 v1.0.17
 - [*] cIni.LoadFrom add Dic.RemoveAll()
