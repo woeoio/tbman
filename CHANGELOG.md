@@ -1,4 +1,10 @@
 
+### 2025-01-10 v1.0.19
+- [*] cSubClass Hook(+byval hWnd)
+
+### 2025-01-10 v1.0.19
+- [+] cSubClass
+
 ### 2024-12-30 v1.0.18
 - [*] cJson .Items() assign
 
