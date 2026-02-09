@@ -193,6 +193,57 @@ Public Function FollowRedirect() As cHttpClient
 
 ---
 
+### 文件操作方法
+
+#### DownloadFile
+```vb
+Public Function DownloadFile(ByVal url As String, ByVal savePath As String, Optional Overwrite As Boolean = True) As Boolean
+```
+同步下载文件并保存到指定路径。
+
+| 参数 | 类型 | 说明 | 默认值 |
+|------|------|------|--------|
+| `url` | String | 文件 URL 地址 | 必需 |
+| `savePath` | String | 本地保存路径 | 必需 |
+| `Overwrite` | Boolean | 是否覆盖已存在文件 | `True` |
+
+**返回值：** 成功返回 `True`，失败抛出错误
+
+#### DownloadFileAsync
+```vb
+Public Function DownloadFileAsync(ByVal url As String, ByVal savePath As String, Optional Overwrite As Boolean = True) As cHttpClient
+```
+启动异步文件下载。
+
+**注意：** 需要在 `OnResponseFinished` 事件中调用 `FinishDownloadFile` 完成保存。
+
+#### FinishDownloadFile
+```vb
+Public Function FinishDownloadFile() As Boolean
+```
+完成异步下载，保存文件。在 `OnResponseFinished` 事件中调用。
+
+#### UploadFile
+```vb
+Public Function UploadFile(ByVal url As String, ByVal filePath As String, Optional fieldName As String = "file", Optional additionalFormData As Scripting.Dictionary = Nothing) As cHttpClient
+```
+上传文件到服务器（使用 multipart/form-data 格式）。
+
+| 参数 | 类型 | 说明 | 默认值 |
+|------|------|------|--------|
+| `url` | String | 上传地址 | 必需 |
+| `filePath` | String | 本地文件路径 | 必需 |
+| `fieldName` | String | 表单字段名 | `"file"` |
+| `additionalFormData` | Dictionary | 额外的表单数据 | `Nothing` |
+
+**返回值：** 返回 `cHttpClient` 实例，支持链式调用
+
+#### UploadFileSimple
+```vb
+Public Function UploadFileSimple(ByVal url As String, ByVal filePath As String) As Boolean
+```
+简化的文件上传，返回布尔值表示成功/失败。
+
 ### 工具方法
 
 #### ShowPage

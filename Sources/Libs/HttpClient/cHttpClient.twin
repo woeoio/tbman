@@ -286,6 +286,188 @@ Class cHttpClient
         ReturnStream = Inst.ResponseStream
     End Function
 
+    ' ==================== 文件上传下载功能 ====================
+    
+    Public Function DownloadFile(ByVal url As String, ByVal savePath As String, Optional Overwrite As Boolean = True) As Boolean
+        '下载文件并保存到指定路径
+        '参数: url - 文件URL, savePath - 保存路径, Overwrite - 是否覆盖已存在文件
+        '返回: 成功返回 True，失败抛出错误
+        On Error GoTo EH
+        
+        '发送 GET 请求获取文件
+        SendGet url
+        
+        '检查响应状态
+        If Inst.Status <> 200 Then
+            Err.Raise Inst.Status, , "下载失败: " & Inst.Status & " " & Inst.StatusText
+        End If
+        
+        '检查文件是否已存在
+        If Dir(savePath) <> "" And Overwrite = False Then
+            Err.Raise 58, , "文件已存在: " & savePath
+        End If
+        
+        '使用 cToolsStream 保存文件
+        Dim Stream As New cToolsStream
+        Dim FileData() As Byte
+        FileData = Inst.ResponseBody
+        Stream.SaveFileAsBinary savePath, FileData
+        
+        DownloadFile = True
+        Exit Function
+EH:
+        LastError = Err.Description
+        Err.Raise Err.Number, Err.Source, Err.Description
+    End Function
+    
+    Public Function DownloadFileAsync(ByVal url As String, ByVal savePath As String, Optional Overwrite As Boolean = True) As cHttpClient
+        '异步下载文件（需要配合 OnResponseFinished 事件处理结果）
+        '注意：异步下载需要在事件中调用 FinishDownloadFile 完成保存
+        Set DownloadFileAsync = Me
+        Async(True).SendGet url
+        '保存下载参数供后续使用
+        RequestHeaders("X-Download-Path") = savePath
+        RequestHeaders("X-Download-Overwrite") = IIf(Overwrite, "1", "0")
+    End Function
+    
+    Public Function FinishDownloadFile() As Boolean
+        '完成异步下载，保存文件（在 OnResponseFinished 事件中调用）
+        On Error GoTo EH
+        
+        If Inst.Status <> 200 Then
+            Err.Raise Inst.Status, , "下载失败: " & Inst.Status & " " & Inst.StatusText
+        End If
+        
+        Dim savePath As String
+        Dim Overwrite As Boolean
+        savePath = RequestHeaders("X-Download-Path")
+        Overwrite = (RequestHeaders("X-Download-Overwrite") = "1")
+        
+        If savePath = "" Then
+            Err.Raise 1, , "未找到下载路径参数"
+        End If
+        
+        '检查文件是否已存在
+        If Dir(savePath) <> "" And Overwrite = False Then
+            Err.Raise 58, , "文件已存在: " & savePath
+        End If
+        
+        '保存文件
+        Dim Stream As New cToolsStream
+        Dim FileData() As Byte
+        FileData = Inst.ResponseBody
+        Stream.SaveFileAsBinary savePath, FileData
+        
+        FinishDownloadFile = True
+        Exit Function
+EH:
+        LastError = Err.Description
+        Err.Raise Err.Number, Err.Source, Err.Description
+    End Function
+
+    Public Function UploadFile(ByVal url As String, ByVal filePath As String, Optional fieldName As String = "file", Optional additionalFormData As Scripting.Dictionary = Nothing) As cHttpClient
+        '上传文件到服务器（使用 multipart/form-data 格式）
+        '参数: url - 上传地址, filePath - 本地文件路径, fieldName - 表单字段名, additionalFormData - 额外的表单数据
+        '返回: cHttpClient 实例（支持链式调用）
+        Set UploadFile = Me
+        On Error GoTo EH
+        
+        '检查文件是否存在
+        If Dir(filePath) = "" Then
+            Err.Raise 53, , "文件不存在: " & filePath
+        End If
+        
+        '读取文件内容
+        Dim Stream As New cToolsStream
+        Dim FileData() As Byte
+        If Not Stream.LoadFileAsBinary(filePath, FileData) Then
+            Err.Raise 1, , "读取文件失败: " & Stream.LastError
+        End If
+        
+        '生成边界字符串
+        Dim Boundary As String
+        Boundary = "----WebKitFormBoundary" & CStr(Rnd() * 1000000000)
+        
+        '构建 multipart 请求体
+        Dim BodyBytes() As Byte
+        Dim PartBytes() As Byte
+        Dim CRLF() As Byte
+        CRLF = ToolsArray.StringToByteArray(vbCrLf)
+        
+        '构建第一部分：文件内容
+        Dim FileName As String
+        FileName = Mid(filePath, InStrRev(filePath, "\") + 1)
+        
+        Dim Part1 As String
+        Part1 = "--" & Boundary & vbCrLf & _
+                "Content-Disposition: form-data; name=""" & fieldName & """; filename=""" & FileName & """" & vbCrLf & _
+                "Content-Type: application/octet-stream" & vbCrLf & vbCrLf
+        
+        PartBytes = ToolsArray.StringToByteArray(Part1)
+        BodyBytes = ConcatByteArrays(BodyBytes, PartBytes)
+        BodyBytes = ConcatByteArrays(BodyBytes, FileData)
+        BodyBytes = ConcatByteArrays(BodyBytes, CRLF)
+        
+        '添加额外的表单数据（如果有）
+        If Not additionalFormData Is Nothing Then
+            Dim key As Variant
+            For Each key In additionalFormData.Keys
+                Dim PartN As String
+                PartN = "--" & Boundary & vbCrLf & _
+                        "Content-Disposition: form-data; name=""" & key & """" & vbCrLf & vbCrLf & _
+                        additionalFormData(key) & vbCrLf
+                PartBytes = ToolsArray.StringToByteArray(PartN)
+                BodyBytes = ConcatByteArrays(BodyBytes, PartBytes)
+            Next
+        End If
+        
+        '添加结束边界
+        Dim EndBoundary As String
+        EndBoundary = "--" & Boundary & "--" & vbCrLf
+        PartBytes = ToolsArray.StringToByteArray(EndBoundary)
+        BodyBytes = ConcatByteArrays(BodyBytes, PartBytes)
+        
+        '设置请求头和发送请求
+        RequestContentType = "multipart/form-data; boundary=" & Boundary
+        RequestHeaders("Content-Length") = UBound(BodyBytes) + 1
+        
+        '打开连接并发送
+        Inst.Open "POST", url, True
+        Inst.SetRequestHeader "Content-Type", RequestContentType
+        Inst.Option(WinHttpRequestOption_SslErrorIgnoreFlags) = &H3300
+        Inst.Option(WinHttpRequestOption_EnableRedirects) = IIf(EnableRedirects, 1, 0)
+        
+        '发送数据
+        Inst.Send BodyBytes
+        
+        '同步等待响应
+        If RequestTimeOut < 5 Then RequestTimeOut = 60  '上传默认60秒超时
+        If Inst.WaitForResponse(RequestTimeOut) = False Then
+            Err.Raise 900, , "上传超时: " & RequestTimeOut
+        End If
+        
+        '处理响应
+        If Inst.Status >= 400 Then
+            Err.Raise Inst.Status, , "上传失败: " & Inst.Status & "#" & Inst.StatusText
+        End If
+        
+        '解析响应头
+        Call ToolsHttp.ParseKeyValue(Inst.GetAllResponseHeaders(), ResponseHeaders)
+        
+        Exit Function
+EH:
+        LastError = Err.Description
+        Err.Raise Err.Number, Err.Source, Err.Description
+    End Function
+    
+    Public Function UploadFileSimple(ByVal url As String, ByVal filePath As String) As Boolean
+        '简化的文件上传，返回布尔值表示成功/失败
+        On Error Resume Next
+        UploadFile url, filePath
+        UploadFileSimple = (Err.Number = 0)
+        If Err.Number <> 0 Then LastError = Err.Description
+    End Function
+
     Public Function ReturnBody() As Byte()
         ReturnBody = Inst.ResponseBody
     End Function
@@ -308,6 +490,49 @@ Class cHttpClient
             ReturnText = Inst.ResponseText
         End If
     End Function
+
+    ' ==================== 私有辅助方法 ====================
+    
+    Private Function ConcatByteArrays(ByRef Arr1() As Byte, ByRef Arr2() As Byte) As Byte()
+        '连接两个字节数组
+        Dim Len1 As Long, Len2 As Long
+        Dim Result() As Byte
+        
+        '处理空数组情况
+        On Error Resume Next
+        Len1 = UBound(Arr1) - LBound(Arr1) + 1
+        If Err.Number <> 0 Then Len1 = 0
+        Err.Clear
+        
+        Len2 = UBound(Arr2) - LBound(Arr2) + 1
+        If Err.Number <> 0 Then Len2 = 0
+        On Error GoTo 0
+        
+        If Len1 = 0 And Len2 = 0 Then
+            ReDim Result(0)
+            ConcatByteArrays = Result
+            Exit Function
+        End If
+        
+        If Len1 = 0 Then
+            ConcatByteArrays = Arr2
+            Exit Function
+        End If
+        
+        If Len2 = 0 Then
+            ConcatByteArrays = Arr1
+            Exit Function
+        End If
+        
+        '创建新数组并复制数据
+        ReDim Result(Len1 + Len2 - 1)
+        CopyMemory Result(0), Arr1(LBound(Arr1)), Len1
+        CopyMemory Result(Len1), Arr2(LBound(Arr2)), Len2
+        
+        ConcatByteArrays = Result
+    End Function
+    
+    Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal length As Long)
 
     Private Sub Class_Initialize()
         Set Inst = New WinHttp.WinHttpRequest
