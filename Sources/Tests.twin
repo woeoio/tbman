@@ -2,11 +2,8 @@ Module Tests
 
     Sub UploadAndDownloadDemo()
         Dim http As New cHttpClient
-        Dim uploadPath As String
-        Dim downloadPath As String
-
-        uploadPath = "C:\Temp\data.txt"
-        downloadPath = "C:\Temp\downloaded.bin"
+        Dim uploadPath As String = "C:\Temp\data.txt"
+        Dim downloadPath As String = "C:\Temp\downloaded.bin"
         Const downloadText As String = "C:\Temp\downloaded.txt"
 
         ' ========== Upload File ==========
