@@ -54,6 +54,9 @@ Class cHttpClient
     Public DebugInfo As New cJson
     '链式调用函数参数变量区
     Dim IsAsync As Boolean
+    Public EnableRedirects As Boolean  '是否自动跟随 3xx 重定向，默认 True
+    Public MaxRedirects As Long        '最大重定向次数，默认 10
+    Dim RedirectCount As Long          '当前重定向计数
 
     'alias
     Public Function MapRequestContentType(ReqType As EnumRequestContentType, Optional ContentType As String) As String
@@ -86,6 +89,56 @@ Class cHttpClient
     Public Function Async(Bool As Boolean) As cHttpClient
         Set Async = Me
         IsAsync = Bool
+    End Function
+
+    Public Function AllowRedirects(Bool As Boolean) As cHttpClient
+        Set AllowRedirects = Me
+        EnableRedirects = Bool
+    End Function
+
+    Public Function GetRedirectUrl() As String
+        '获取 3xx 响应中的 Location 头（重定向目标地址）
+        If ResponseHeaders.Exists("Location") Then
+            GetRedirectUrl = ResponseHeaders("Location")
+        ElseIf ResponseHeaders.Exists("location") Then
+            GetRedirectUrl = ResponseHeaders("location")
+        End If
+    End Function
+
+    Public Function FollowRedirect() As cHttpClient
+        '手动跟随重定向，保留当前请求配置（headers、cookies等）
+        Set FollowRedirect = Me
+        
+        Dim RedirectUrl As String: RedirectUrl = GetRedirectUrl()
+        If RedirectUrl = "" Then Exit Function
+        
+        '检查最大重定向次数
+        RedirectCount = RedirectCount + 1
+        If RedirectCount > MaxRedirects Then
+            Err.Raise 310, , "重定向次数超过最大限制: " & MaxRedirects
+        End If
+        
+        '根据 3xx 状态码处理重定向
+        Select Case Inst.Status
+            Case 301, 302, 303
+                'GET/HEAD 请求使用 GET 方法，其他方法转为 GET
+                SendGet RedirectUrl
+            Case 307, 308
+                '保持原请求方法和 Body 不变
+                Dim Method As EnumRequestMethod
+                Method = ToolsHttp.ParseMethodName(RequestHeaders("X-Original-Method"))
+                If Method = 0 Then Method = ReqGet  '默认 GET
+                Send Method, RedirectUrl
+            Case Else
+                '其他 3xx 状态码，默认使用 GET
+                SendGet RedirectUrl
+        End Select
+    End Function
+
+    Public Function ResetRedirectCount() As cHttpClient
+        '重置重定向计数，链式调用
+        Set ResetRedirectCount = Me
+        RedirectCount = 0
     End Function
 
     Public Function SendPost(ByVal url As String, Optional Body As String) As cHttpClient
@@ -138,6 +191,8 @@ Class cHttpClient
         End With
         '忽略错误SSL证书
         Inst.Option(WinHttpRequestOption_SslErrorIgnoreFlags) = &H3300
+        '设置是否自动跟随重定向（301/302/307等）
+        Inst.Option(WinHttpRequestOption_EnableRedirects) = IIf(EnableRedirects, 1, 0)
         '处理POSTBODY
         If Body = "" Then
             If RequestContentType = Consts.TOOLS_HTTP_CONTENT_TYPE_JSON Then
@@ -172,7 +227,8 @@ Class cHttpClient
             '            DoEvents                                                            '允许其他事件处理，防止卡死
             '        Loop
             '
-            If Inst.Status < 200 Or Inst.Status >= 300 Then Err.Raise Inst.Status, , Inst.Status & "#" & Inst.StatusText & "#" & Left(Inst.ResponseText, 1024)
+            '状态码判断：4xx/5xx 为明确错误，其余交给调用方处理
+            If Inst.Status >= 400 And Inst.Status <= 599 Then Err.Raise Inst.Status, , Inst.Status & "#" & Inst.StatusText & "#" & Left(Inst.ResponseText, 1024)
             '解析 返回头
             Call ToolsHttp.ParseKeyValue(Inst.GetAllResponseHeaders(), ResponseHeaders)
         End If
@@ -275,6 +331,8 @@ Class cHttpClient
         ResponseHeaders.CompareMode = TextCompare
         RequestTimeOut = 5
         RequestChartSet = "utf-8"
+        EnableRedirects = True  '默认启用自动重定向
+        MaxRedirects = 10       '默认最大重定向 10 次
     End Sub
 
     Private Sub Class_Terminate()
