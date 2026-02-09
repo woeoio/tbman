@@ -23,7 +23,7 @@
 - [+] cHttpClient add private helper:
         - ConcatByteArrays (byte array concatenation for multipart body building)
 - [+] Add demo: Demos/httpclient/005.frm (file upload/download examples)
-- [+] Add documentation: Docs/en/httpclient/11-.md
+- [+] Add documentation: Docs\en\httpclient\12-FileUploadDownload.md
 
 ### 2025-12-26 v1.0.26
 - [*] cHttpClient add methods:
