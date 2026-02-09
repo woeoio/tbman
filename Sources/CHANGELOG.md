@@ -1,3 +1,30 @@
+### 2025-02-09 v1.0.28
+- [*] cHttpClient status code handling improvements:
+        - Changed status check from 'Status <> 200' to 'Status >= 400 And Status <= 599'
+        - 2xx success and 3xx redirects are no longer treated as errors
+- [+] cHttpClient redirect handling features:
+        - EnableRedirects property (auto-follow 3xx redirects, default True)
+        - MaxRedirects property (limit redirect count, default 10)
+        - AllowRedirects() method (chainable redirect toggle)
+        - GetRedirectUrl() method (extract Location header)
+        - FollowRedirect() method (manual redirect with method preservation)
+        - ResetRedirectCount() method (chainable counter reset)
+- [+] Add documentation:
+        - Sources/Libs/HttpClient/README.md
+        - Docs/httpclient/ (11 comprehensive guides)
+
+### 2025-02-09 v1.0.27
+- [+] cHttpClient add file transfer methods:
+        - DownloadFile (sync download)
+        - DownloadFileAsync (async download)
+        - FinishDownloadFile (complete async download)
+        - UploadFile (multipart/form-data upload with extra form data support)
+        - UploadFileSimple (simplified upload returning boolean)
+- [+] cHttpClient add private helper:
+        - ConcatByteArrays (byte array concatenation for multipart body building)
+- [+] Add demo: Demos/httpclient/005.frm (file upload/download examples)
+- [+] Add documentation: Docs/httpclient/11-文件上传下载.md
+
 ### 2025-12-26 v1.0.26
 - [*] cHttpClient add methods:
         - Send
