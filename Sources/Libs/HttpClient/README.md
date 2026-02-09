@@ -1,40 +1,46 @@
-# cHttpClient - HTTP 客户端类
+# cHttpClient - HTTP Client Class
 
-## 简介
+## Introduction
 
-`cHttpClient` 是基于 WinHTTP 组件封装的 HTTP 客户端类，提供简洁的链式调用 API，支持同步/异步请求、自动重定向、JSON/表单数据处理等功能。
+`cHttpClient` is an HTTP client class wrapped around the WinHTTP component, providing a simple chainable API with support for synchronous/asynchronous requests, automatic redirects, JSON/form data processing, file upload/download, and more.
 
-## 快速开始
+## Quick Start
 
 ```vb
 Dim http As New cHttpClient
 
-' 简单的 GET 请求
+' Simple GET request
 http.SendGet("https://api.example.com/data")
 Debug.Print http.ReturnText()
 
-' POST JSON 数据
+' POST JSON data
 http.SetRequestContentType(Json)
 http.RequestDataJson.Add "name", "test"
 http.SendPost("https://api.example.com/users")
+
+' File download
+http.DownloadFile "https://example.com/file.pdf", "C:\Downloads\file.pdf"
+
+' File upload
+http.UploadFile "https://api.example.com/upload", "C:\Data\report.pdf"
 ```
 
-## 主要特性
+## Key Features
 
-- ✅ **链式调用** - 流畅的 API 设计
-- ✅ **同步/异步** - 支持两种请求模式
-- ✅ **自动重定向** - 支持 3xx 状态码自动跟随
-- ✅ **数据格式** - JSON、表单、纯文本等多种 Content-Type
-- ✅ **编码支持** - UTF-8 编码自动处理
-- ✅ **调试信息** - 完整的请求/响应日志
+- ✅ **Method Chaining** - Fluent API design
+- ✅ **Sync/Async** - Support for both request modes
+- ✅ **Auto Redirect** - Automatic following of 3xx status codes
+- ✅ **Data Formats** - JSON, form, plain text, and other Content-Type support
+- ✅ **File Operations** - Simple file upload and download
+- ✅ **Encoding** - Automatic UTF-8 encoding handling
+- ✅ **Debug Info** - Complete request/response logging
 
-## 依赖组件
+## Dependencies
 
 - Microsoft WinHTTP Services, version 5.1
 - Microsoft Scripting Runtime
-- cJson 类
+- cJson class
 
-## 详细文档
+## Documentation
 
-完整开发文档请参考：`Docs/en/httpclient/`
-
+For complete developer documentation, please refer to: `Docs/en/httpclient/`
