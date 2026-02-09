@@ -1,5 +1,49 @@
-Module ToolsStr
+Class cToolsStr
 
+    '辅助函数：将文本分割为行集合
+    Public Function SplitLinesToCollection(ByVal Text As String) As Collection
+        Set SplitLinesToCollection = New Collection
+        Dim LineCount As Long
+        Dim Pos As Long
+        Dim NextPos As Long
+        Dim Size As Long: Size = Len(Text)
+    
+        '处理空文本
+        If Size = 0 Then Exit Function
+    
+        '统一换行符为 vbCrLf
+        '    Text = Replace(Text, vbLf, vbCrLf)
+        '    Text = Replace(Text, vbCr, vbCrLf)
+    
+        '分割文本
+        Pos = 1
+        Do Until Pos = Size
+            NextPos = InStr(Pos, Text, vbCrLf)
+            If NextPos = 0 Then
+                SplitLinesToCollection.Add Mid(Text, Pos)
+                Exit Do
+            End If
+            SplitLinesToCollection.Add Mid(Text, Pos, NextPos - Pos)
+            Pos = NextPos + 2
+        Loop
+    End Function
+    '辅助函数：将行集合合并为字符串
+    Public Function JoinLinesFromCollection(Coll As Collection) As String
+        '处理空文本
+        If Coll.Count = 0 Then Exit Function
+        Dim Size As Long: Size = Coll.Count
+        Dim Txt() As String, i As Long
+    
+        ReDim Txt(1 To Size)
+        '分割文本
+        For i = 1 To Size
+            Txt(i) = Coll.Item(i)
+        Next
+    
+        JoinLinesFromCollection = Join(Txt, vbCrLf)
+    End Function
+    
+    
     Public Function IsEmptyEx(Text As String) As Boolean
         Text = TrimEx(Text)
         IsEmptyEx = Text = ""
@@ -216,8 +260,8 @@ Module ToolsStr
         Dim ttt As String
         If Text = "" Then Exit Function
         ttt = Replace(Text, vbCrLf, "@@@")
-        If ToolsStr.HasStr(vbLf, ttt) > 0 Then ttt = Replace(ttt, vbLf, vbCrLf)
-        If ToolsStr.HasStr(vbCr, ttt) > 0 Then ttt = Replace(ttt, vbCr, vbCrLf)
+        If HasStr(vbLf, ttt) > 0 Then ttt = Replace(ttt, vbLf, vbCrLf)
+        If HasStr(vbCr, ttt) > 0 Then ttt = Replace(ttt, vbCr, vbCrLf)
         UniVbCrLf = Replace(ttt, "@@@", vbCrLf)
     End Function
 
@@ -334,10 +378,10 @@ Module ToolsStr
     End Function
 
     Public Function GetRandStr(Optional ByVal Lens As Integer = 32, Optional Zuhe As String = "1aA") As String
-        REM 先顶用下，后期优化
+        Rem 先顶用下，后期优化
         '取的随机字符串，组合参数支持  1aA@
-        REM 有时间可以开1000个线程并行计算，看看跑多长时间会出现重复，
-        REM 以 8 位 1aA 参数测试，32位字符重复率视为零
+        Rem 有时间可以开1000个线程并行计算，看看跑多长时间会出现重复，
+        Rem 以 8 位 1aA 参数测试，32位字符重复率视为零
         '制作：2016-01-21   邓伟
         Dim Chars As String, i As Long, Max As Long, c As String, Pos As Long
         Dim Char As String
@@ -391,4 +435,4 @@ Module ToolsStr
         GetRandByte = ByteArray
     End Function
 
-End Module
+End Class

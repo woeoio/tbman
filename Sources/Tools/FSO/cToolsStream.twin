@@ -1,0 +1,121 @@
+Class cToolsStream
+
+    '    Library ADODB
+    'C:  \Program Files (x86)\Common Files\System\ado\msado28.tlb
+    '    Microsoft ActiveX Data Objects 2.8 Library
+
+'作者：邓伟，QQ 215879458
+
+'    Library ADODB
+'C:  \Program Files (x86)\Common Files\System\ado\msado28.tlb
+'    Microsoft ActiveX Data Objects 2.8 Library
+
+Public Inst As New ADODB.Stream
+Public LastError As String, LineNumber As Long                                  'todo 对外需要只读
+Public UseLine As Boolean                                                       '如果启用了按行读写，则以 lineData 为数据主体，inst 的内容是原始值
+Public LineData As New Collection
+
+Public Function UseLineMode(v As Boolean) As cToolsStream
+    Set UseLineMode = Me
+    UseLine = v
+End Function
+
+
+Public Function ReadLine(Optional ByVal Line As Long) As String
+    '从 LineNumber 读入一行内容，如果提供了 Line 则读入指定行
+    If UseLine = False Then Err.Raise 1, , "未启用按行读写"
+    If Line > 0 Then LineNumber = Line
+    ReadLine = LineData.Item(LineNumber)
+    LineNumber = LineNumber + 1
+End Function
+
+Public Function WriteLine(Text As String, Optional ByVal Line As Long) As Boolean
+    '向 LineNumber 写入一行内容，如果提供了 Line 则写入指定行
+    If UseLine = False Then Err.Raise 1, , "未启用按行读写"
+    If Line > 0 Then LineNumber = Line
+    LineData.Add Text, LineNumber
+    LineNumber = LineNumber + 1
+    WriteLine = True
+End Function
+
+Public Function LoadFileAsText(ByVal FileName As String, Optional ByVal CharSet As String = "UTF-8") As String
+    With Inst
+        .Type = adTypeText
+        .Open
+        .Charset = CharSet
+        .LoadFromFile FileName
+        LoadFileAsText = .ReadText()
+        .Position = 0
+        '        .Close
+    End With
+    ' 如果 UseLine 为 true，则将内容按行分割并存储到 LineDict
+    If UseLine Then
+        Set LineData = ToolsStr.SplitLinesToCollection(LoadFileAsText)
+        LineNumber = 1
+    End If
+End Function
+Public Function SaveFileAsText(ByVal FileName As String, Optional Data As String, Optional ByVal CharSet As String = "UTF-8") As Boolean
+    Dim Dat As String, isInst As Boolean
+    If IsMissing(Data) Then
+        If UseLine = True Then
+            Dat = ToolsStr.JoinLinesFromCollection(LineData)
+        Else
+            isInst = True
+        End If
+    Else
+        Dat = Data
+    End If
+    With Inst
+        If .State = adStateClosed Then .Open
+        .Charset = CharSet
+        If isInst = False Then .WriteText Dat
+        .SaveToFile FileName, adSaveCreateOverWrite
+        '        .Close
+    End With
+End Function
+
+Public Function LoadFileAsBinary(ByVal Path As String, OutData() As Byte) As Boolean
+    On Error GoTo EH
+    LastError = ""
+    With Inst
+        If .State <> adStateClosed Then .Close
+        .Type = adTypeBinary
+        .Open
+        .LoadFromFile Path
+        OutData = .Read()
+        .Close
+    End With
+    LoadFileAsBinary = True
+    Exit Function
+EH:
+    LastError = Err.Description & "#" & Err.Description
+End Function
+
+Public Function SaveFileAsBinary(ByVal Path As String, OutData() As Byte) As Boolean
+    On Error GoTo EH
+    LastError = ""
+    With Inst
+        If .State <> adStateClosed Then .Close
+        .Type = adTypeBinary
+        .Open
+        .Write OutData
+        .SaveToFile Path, adSaveCreateOverWrite
+        .Close
+    End With
+    SaveFileAsBinary = True
+    Exit Function
+EH:
+    LastError = Err.Description & "#" & Err.Description
+End Function
+
+Private Sub Class_Initialize()
+    '
+End Sub
+
+Private Sub Class_Terminate()
+    On Error Resume Next
+    Inst.Close
+End Sub
+
+
+End Class

@@ -1,0 +1,6 @@
+Module Tools
+
+	Public ToolsStr As New cToolsStr
+    Public ToolsStream As New cToolsStream
+
+End Module
