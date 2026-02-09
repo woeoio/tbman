@@ -11,7 +11,7 @@
         - ResetRedirectCount() method (chainable counter reset)
 - [+] Add documentation:
         - Sources/Libs/HttpClient/README.md
-        - Docs/httpclient/ (11 comprehensive guides)
+        - Docs/en/httpclient/ (11 comprehensive guides)
 
 ### 2025-02-09 v1.0.27
 - [+] cHttpClient add file transfer methods:
@@ -23,7 +23,7 @@
 - [+] cHttpClient add private helper:
         - ConcatByteArrays (byte array concatenation for multipart body building)
 - [+] Add demo: Demos/httpclient/005.frm (file upload/download examples)
-- [+] Add documentation: Docs/httpclient/11-文件上传下载.md
+- [+] Add documentation: Docs/en/httpclient/11-.md
 
 ### 2025-12-26 v1.0.26
 - [*] cHttpClient add methods:

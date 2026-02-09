@@ -36,4 +36,5 @@ http.SendPost("https://api.example.com/users")
 
 ## 详细文档
 
-完整开发文档请参考：`Docs/httpclient/`
+完整开发文档请参考：`Docs/en/httpclient/`
+
