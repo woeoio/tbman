@@ -197,16 +197,17 @@ Sub UploadAndDownloadDemo()
     Dim http As New cHttpClient
     Dim uploadPath As String
     Dim downloadPath As String
-    
+
     uploadPath = "C:\Temp\data.txt"
-    downloadPath = "C:\Temp\downloaded.txt"
-    
+    downloadPath = "C:\Temp\downloaded.bin"
+    Const downloadText As String = "C:\Temp\downloaded.txt"
+
     ' ========== 上传文件 ==========
     Debug.Print "正在上传文件..."
-    
+
     If http.UploadFileSimple("https://httpbin.org/post", uploadPath) Then
         Debug.Print "上传成功!"
-        
+
         ' 解析响应
         Dim json As cJson
         Set json = http.ReturnJson()
@@ -215,18 +216,30 @@ Sub UploadAndDownloadDemo()
         Debug.Print "上传失败: " & http.LastError
         Exit Sub
     End If
-    
+
     ' ========== 下载文件 ==========
     Debug.Print "正在下载文件..."
-    
+
     On Error Resume Next
     http.DownloadFile "https://httpbin.org/bytes/1024", downloadPath
-    
+
     If Err.Number = 0 Then
         Debug.Print "下载成功! 文件大小: " & FileLen(downloadPath) & " 字节"
     Else
         Debug.Print "下载失败: " & Err.Description
     End If
     On Error GoTo 0
+
+    ' ============= 下载文本 ===============
+    On Error Resume Next
+    http.DownloadFile "https://httpbin.org/encoding/utf8", downloadText
+
+    If Err.Number = 0 Then
+        Debug.Print "下载成功! 文件大小: " & FileLen(downloadText) & " 字节"
+    Else
+        Debug.Print "下载失败: " & Err.Description
+    End If
+    On Error GoTo 0
+
 End Sub
 ```

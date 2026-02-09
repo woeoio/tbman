@@ -199,7 +199,8 @@ Sub UploadAndDownloadDemo()
     Dim downloadPath As String
 
     uploadPath = "C:\Temp\data.txt"
-    downloadPath = "C:\Temp\downloaded.txt"
+    downloadPath = "C:\Temp\downloaded.bin"
+    Const downloadText As String = "C:\Temp\downloaded.txt"
 
     ' ========== Upload File ==========
     Debug.Print "Uploading file..."
@@ -228,5 +229,17 @@ Sub UploadAndDownloadDemo()
         Debug.Print "Download failed: " & Err.Description
     End If
     On Error GoTo 0
+
+    ' ============= Download text ===============
+    On Error Resume Next
+    http.DownloadFile "https://httpbin.org/encoding/utf8", downloadText
+
+    If Err.Number = 0 Then
+        Debug.Print "Download successful! File size: " & FileLen(downloadText) & " bytes"
+    Else
+        Debug.Print "Download failed: " & Err.Description
+    End If
+    On Error GoTo 0
+
 End Sub
 ```

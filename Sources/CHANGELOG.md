@@ -1,4 +1,8 @@
-### 2025-02-09 v1.0.28
+### 2026-02-09 v1.0.29
+- [*] cToolsStream `Class_Terminate` safe close `Inst`
+- [+] Added test examples for upload and download
+
+### 2026-02-09 v1.0.28
 - [*] cHttpClient status code handling improvements:
         - Changed status check from 'Status <> 200' to 'Status >= 400 And Status <= 599'
         - 2xx success and 3xx redirects are no longer treated as errors
@@ -13,7 +17,7 @@
         - Sources/Libs/HttpClient/README.md
         - Docs/en/httpclient/ (11 comprehensive guides)
 
-### 2025-02-09 v1.0.27
+### 2026-02-09 v1.0.27
 - [+] cHttpClient add file transfer methods:
         - DownloadFile (sync download)
         - DownloadFileAsync (async download)
