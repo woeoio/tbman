@@ -1,0 +1,458 @@
+Module ToolsCN
+
+    '暂时废弃此对象, 2024-12-30
+    
+    
+    Dim Dic As Object
+    
+    Public Function GetPinYin(CnChar As String) As String
+        Call InitDictinary()
+        Dim i As Long, C As String, G As String, Num As Long, A As Variant, B As Variant
+        For i = 1 To Len(CnChar)
+            Num	= Asc(Mid(CnChar, i, 1))()
+            If Num > 0 And Num < 160 Then
+                G = Chr(Num)()
+            Else
+                If Num < -20319 Or Num > -10247 Then
+                    G = ""
+                Else
+                    A = Dic.Items
+                    B = Dic.keys
+                    For i = Dic.Count - 1 To 0 Step -1
+                        If A(i) <= Num Then Exit For
+                    Next
+                    G = B(i)
+                End If
+            End If
+            C = C & G
+        Next
+        GetPinYin = C
+    End Function
+    
+
+    Private Sub	InitDictinary()
+        If Not Dic Is Nothing Then Exit Sub
+        Set Dic = CreateObject("Scripting.Dictionary")
+        With Dic
+            .Add "A", -20319
+            .Add "Ai", -20317
+            .Add "An", -20304
+            .Add "Ang", -20295
+            .Add "Ao", -20292
+        
+            .Add "Ba", -20283
+            .Add "Bai", -20265
+            .Add "Ban", -20257
+            .Add "Bang", -20242
+            .Add "Bao", -20230
+            .Add "Bei", -20051
+            .Add "Ben", -20036
+            .Add "Beng", -20032
+            .Add "Bi", -20026
+            .Add "Bian", -20002
+            .Add "Biao", -19990
+            .Add "Bie", -19986
+            .Add "Bin", -19982
+            .Add "Bing", -19976
+            .Add "Bo", -19805
+            .Add "Bu", -19784
+        
+            .Add "Ca", -19775
+            .Add "Cai", -19774
+            .Add "Can", -19763
+            .Add "Cang", -19756
+            .Add "Cao", -19751
+            .Add "Ce", -19746
+            .Add "Ceng", -19741
+            .Add "Cha", -19739
+            .Add "Chai", -19728
+            .Add "Chan", -19725
+            .Add "Chang", -19715
+            .Add "Chao", -19540
+            .Add "Che", -19531
+            .Add "Chen", -19525
+            .Add "Cheng", -19515
+            .Add "Chi", -19500
+            .Add "Chong", -19484
+            .Add "Chou", -19479
+            .Add "Chu", -19467
+            .Add "Chuai", -19289
+            .Add "Chuan", -19288
+            .Add "Chuang", -19281
+            .Add "Chui", -19275
+            .Add "Chun", -19270
+            .Add "Chuo", -19263
+            .Add "Ci", -19261
+            .Add "Cong", -19249
+            .Add "Cou", -19243
+            .Add "Cu", -19242
+            .Add "Cuan", -19238
+            .Add "Cui", -19235
+            .Add "Cun", -19227
+            .Add "Cuo", -19224
+        
+            .Add "Da", -19218
+            .Add "Dai", -19212
+            .Add "Dan", -19038
+            .Add "Dang", -19023
+            .Add "Dao", -19018
+            .Add "De", -19006
+            .Add "Deng", -19003
+            .Add "Di", -18996
+            .Add "Dian", -18977
+            .Add "Diao", -18961
+            .Add "Die", -18952
+            .Add "Ding", -18783
+            .Add "Diu", -18774
+            .Add "Dong", -18773
+            .Add "Dou", -18763
+            .Add "Du", -18756
+            .Add "Duan", -18741
+            .Add "Dui", -18735
+            .Add "Dun", -18731
+            .Add "Duo", -18722
+        
+            .Add "E", -18710
+            .Add "En", -18697
+            .Add "Er", -18696
+        
+            .Add "Fa", -18526
+            .Add "Fan", -18518
+            .Add "Fang", -18501
+            .Add "Fei", -18490
+            .Add "Fen", -18478
+            .Add "Feng", -18463
+            .Add "Fo", -18448
+            .Add "Fou", -18447
+            .Add "Fu", -18446
+        
+            .Add "Ga", -18239
+            .Add "Gai", -18237
+            .Add "Gan", -18231
+            .Add "Gang", -18220
+            .Add "Gao", -18211
+            .Add "Ge", -18201
+            .Add "Gei", -18184
+            .Add "Gen", -18183
+            .Add "Geng", -18181
+            .Add "Gong", -18012
+            .Add "Gou", -17997
+            .Add "Gu", -17988
+            .Add "Gua", -17970
+            .Add "Guai", -17964
+            .Add "Guan", -17961
+            .Add "Guang", -17950
+            .Add "Gui", -17947
+            .Add "Gun", -17931
+            .Add "Guo", -17928
+        
+            .Add "Ha", -17922
+            .Add "Hai", -17759
+            .Add "Han", -17752
+            .Add "Hang", -17733
+            .Add "Hao", -17730
+            .Add "He", -17721
+            .Add "Hei", -17703
+            .Add "Hen", -17701
+            .Add "Heng", -17697
+            .Add "Hong", -17692
+            .Add "Hou", -17683
+            .Add "Hu", -17676
+            .Add "Hua", -17496
+            .Add "Huai", -17487
+            .Add "Huan", -17482
+            .Add "Huang", -17468
+            .Add "Hui", -17454
+            .Add "Hun", -17433
+            .Add "Huo", -17427
+        
+            .Add "Ji", -17417
+            .Add "Jia", -17202
+            .Add "Jian", -17185
+            .Add "Jiang", -16983
+            .Add "Jiao", -16970
+            .Add "Jie", -16942
+            .Add "Jin", -16915
+            .Add "Jing", -16733
+            .Add "Jiong", -16708
+            .Add "Jiu", -16706
+            .Add "Ju", -16689
+            .Add "Juan", -16664
+            .Add "Jue", -16657
+            .Add "Jun", -16647
+        
+            .Add "Ka", -16474
+            .Add "Kai", -16470
+            .Add "Kan", -16465
+            .Add "Kang", -16459
+            .Add "Kao", -16452
+            .Add "Ke", -16448
+            .Add "Ken", -16433
+            .Add "Keng", -16429
+            .Add "Kong", -16427
+            .Add "Kou", -16423
+            .Add "Ku", -16419
+            .Add "Kua", -16412
+            .Add "Kuai", -16407
+            .Add "Kuan", -16403
+            .Add "Kuang", -16401
+            .Add "Kui", -16393
+            .Add "Kun", -16220
+            .Add "Kuo", -16216
+        
+            .Add "La", -16212
+            .Add "Lai", -16205
+            .Add "Lan", -16202
+            .Add "Lang", -16187
+            .Add "Lao", -16180
+            .Add "Le", -16171
+            .Add "Lei", -16169
+            .Add "Leng", -16158
+            .Add "Li", -16155
+            .Add "Lia", -15959
+            .Add "Lian", -15958
+            .Add "Liang", -15944
+            .Add "Liao", -15933
+            .Add "Lie", -15920
+            .Add "Lin", -15915
+            .Add "Ling", -15903
+            .Add "Liu", -15889
+            .Add "Long", -15878
+            .Add "Lou", -15707
+            .Add "Lu", -15701
+            .Add "Lv", -15681
+            .Add "Luan", -15667
+            .Add "Lue", -15661
+            .Add "Lun", -15659
+            .Add "Luo", -15652
+        
+            .Add "Ma", -15640
+            .Add "Mai", -15631
+            .Add "Man", -15625
+            .Add "Mang", -15454
+            .Add "Mao", -15448
+            .Add "Me", -15436
+            .Add "Mei", -15435
+            .Add "Men", -15419
+            .Add "Meng", -15416
+            .Add "Mi", -15408
+            .Add "Mian", -15394
+            .Add "Miao", -15385
+            .Add "Mie", -15377
+            .Add "Min", -15375
+            .Add "Ming", -15369
+            .Add "Miu", -15363
+            .Add "Mo", -15362
+            .Add "Mou", -15183
+            .Add "Mu", -15180
+        
+            .Add "Na", -15165
+            .Add "Nai", -15158
+            .Add "Nan", -15153
+            .Add "Nang", -15150
+            .Add "Nao", -15149
+            .Add "Ne", -15144
+            .Add "Nei", -15143
+            .Add "Nen", -15141
+            .Add "Neng", -15140
+            .Add "Ni", -15139
+            .Add "Nian", -15128
+            .Add "Niang", -15121
+            .Add "Niao", -15119
+            .Add "Nie", -15117
+            .Add "Nin", -15110
+            .Add "Ning", -15109
+            .Add "Niu", -14941
+            .Add "Nong", -14937
+            .Add "Nu", -14933
+            .Add "Nv", -14930
+            .Add "Nuan", -14929
+            .Add "Nue", -14928
+            .Add "Nuo", -14926
+        
+            .Add "O", -14922
+            .Add "Ou", -14921
+        
+            .Add "Pa", -14914
+            .Add "Pai", -14908
+            .Add "Pan", -14902
+            .Add "Pang", -14894
+            .Add "Pao", -14889
+            .Add "Pei", -14882
+            .Add "Pen", -14873
+            .Add "Peng", -14871
+            .Add "Pi", -14857
+            .Add "Pian", -14678
+            .Add "Piao", -14674
+            .Add "Pie", -14670
+            .Add "Pin", -14668
+            .Add "Ping", -14663
+            .Add "Po", -14654
+            .Add "Pu", -14645
+        
+            .Add "Qi", -14630
+            .Add "Qia", -14594
+            .Add "Qian", -14429
+            .Add "Qiang", -14407
+            .Add "Qiao", -14399
+            .Add "Qie", -14384
+            .Add "Qin", -14379
+            .Add "Qing", -14368
+            .Add "Qiong", -14355
+            .Add "Qiu", -14353
+            .Add "Qu", -14345
+            .Add "Quan", -14170
+            .Add "Que", -14159
+            .Add "Qun", -14151
+        
+            .Add "Ran", -14149
+            .Add "Rang", -14145
+            .Add "Rao", -14140
+            .Add "Re", -14137
+            .Add "Ren", -14135
+            .Add "Reng", -14125
+            .Add "Ri", -14123
+            .Add "Rong", -14122
+            .Add "Rou", -14112
+            .Add "Ru", -14109
+            .Add "Ruan", -14099
+            .Add "Rui", -14097
+            .Add "Run", -14094
+            .Add "Ruo", -14092
+        
+            .Add "Sa", -14090
+            .Add "Sai", -14087
+            .Add "San", -14083
+            .Add "Sang", -13917
+            .Add "Sao", -13914
+            .Add "Se", -13910
+            .Add "Sen", -13907
+            .Add "Seng", -13906
+            .Add "Sha", -13905
+            .Add "Shai", -13896
+            .Add "Shan", -13894
+            .Add "Shang", -13878
+            .Add "Shao", -13870
+            .Add "She", -13859
+            .Add "Shen", -13847
+            .Add "Sheng", -13831
+            .Add "Shi", -13658
+            .Add "Shou", -13611
+            .Add "Shu", -13601
+            .Add "Shua", -13406
+            .Add "Shuai", -13404
+            .Add "Shuan", -13400
+            .Add "Shuang", -13398
+            .Add "Shui", -13395
+            .Add "Shun", -13391
+            .Add "Shuo", -13387
+            .Add "Si", -13383
+            .Add "Song", -13367
+            .Add "Sou", -13359
+            .Add "Su", -13356
+            .Add "Suan", -13343
+            .Add "Sui", -13340
+            .Add "Sun", -13329
+            .Add "Suo", -13326
+        
+            .Add "Ta", -13318
+            .Add "Tai", -13147
+            .Add "Tan", -13138
+            .Add "Tang", -13120
+            .Add "Tao", -13107
+            .Add "Te", -13096
+            .Add "Teng", -13095
+            .Add "Ti", -13091
+            .Add "Tian", -13076
+            .Add "Tiao", -13068
+            .Add "Tie", -13063
+            .Add "Ting", -13060
+            .Add "Tong", -12888
+            .Add "Tou", -12875
+            .Add "Tu", -12871
+            .Add "Tuan", -12860
+            .Add "Tui", -12858
+            .Add "Tun", -12852
+            .Add "Tuo", -12849
+        
+            .Add "Wa", -12838
+            .Add "Wai", -12831
+            .Add "Wan", -12829
+            .Add "Wang", -12812
+            .Add "Wei", -12802
+            .Add "Wen", -12607
+            .Add "Weng", -12597
+            .Add "Wo", -12594
+            .Add "Wu", -12585
+        
+            .Add "Xi", -12556
+            .Add "Xia", -12359
+            .Add "Xian", -12346
+            .Add "Xiang", -12320
+            .Add "Xiao", -12300
+            .Add "Xie", -12120
+            .Add "Xin", -12099
+            .Add "Xing", -12089
+            .Add "Xiong", -12074
+            .Add "Xiu", -12067
+            .Add "Xu", -12058
+            .Add "Xuan", -12039
+            .Add "Xue", -11867
+            .Add "Xun", -11861
+        
+            .Add "Ya", -11847
+            .Add "Yan", -11831
+            .Add "Yang", -11798
+            .Add "Yao", -11781
+            .Add "Ye", -11604
+            .Add "Yi", -11589
+            .Add "Yin", -11536
+            .Add "Ying", -11358
+            .Add "Yo", -11340
+            .Add "Yong", -11339
+            .Add "You", -11324
+            .Add "Yu", -11303
+            .Add "Yuan", -11097
+            .Add "Yue", -11077
+            .Add "Yun", -11067
+        
+            .Add "Za", -11055
+            .Add "Zai", -11052
+            .Add "Zan", -11045
+            .Add "Zang", -11041
+            .Add "Zao", -11038
+            .Add "Ze", -11024
+            .Add "Zei", -11020
+            .Add "Zen", -11019
+            .Add "Zeng", -11018
+            .Add "Zha", -11014
+            .Add "Zhai", -10838
+            .Add "Zhan", -10832
+            .Add "Zhang", -10815
+            .Add "Zhao", -10800
+            .Add "Zhe", -10790
+            .Add "Zhen", -10780
+            .Add "Zheng", -10764
+            .Add "Zhi", -10587
+            .Add "Zhong", -10544
+            .Add "Zhou", -10533
+            .Add "Zhu", -10519
+            .Add "Zhua", -10331
+            .Add "Zhuai", -10329
+            .Add "Zhuan", -10328
+            .Add "Zhuang", -10322
+            .Add "Zhui", -10315
+            .Add "Zhun", -10309
+            .Add "Zhuo", -10307
+            .Add "Zi", -10296
+            .Add "Zong", -10281
+            .Add "Zou", -10274
+            .Add "Zu", -10270
+            .Add "Zuan", -10262
+            .Add "Zui", -10260
+            .Add "Zun", -10256
+            .Add "Zuo", -10254
+        End	With
+    End Sub
+    
+End Module

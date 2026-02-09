@@ -1,0 +1,55 @@
+Module ToolsDialog
+
+	' add your procedures here
+    ' add your member fields and procedures here
+    
+    Public LastError As String
+    
+    ' Private Sub Test()
+    '     Dim Files As New Collection
+    '     If ToolsDialog.OpenBox(Files, "*", True) = False Then MsgBox ToolsDialog.LastError
+    '     MsgBox Files.Count
+    ' End Sub
+    
+
+    ' Public Function OpenBox(Files As Collection, Optional Filter As String = "*", Optional Multiselect As Boolean) As Boolean
+    '     On Error GoTo ErrHandler
+    '     Dim Dialog As MSComDlg.CommonDialog
+    '     Set Dialog = ForDialog.CommonDialog1
+    '     With Dialog
+    '         ' 设置“CancelError”为 True
+    '         .CancelError = False
+    '         ' 设置标志
+    '         If Multiselect = True Then
+    '             .Flags = cdlOFNAllowMultiselect Or cdlOFNExplorer
+    '         Else
+    '             .Flags = cdlOFNExplorer
+    '         End If
+    '         ' 设置过滤器
+    '         .Filter = Filter
+    '         ' 指定缺省的过滤器
+    '         '    .FilterIndex = 2
+    '         ' 显示“打开”对话框
+    '         .ShowOpen
+    '         If .FileName = "" Then LastError = "没有选择任何文件": Exit Function
+    '         ' 选定文件的名字
+    '         Dim temp As Variant
+    '         temp = Split(.FileName, Chr(0))
+    '         If UBound(temp) = 0 Then
+    '             Files.Add temp(0)
+    '         Else
+    '             Dim i&
+    '             For i = 1 To UBound(temp)
+    '                 Files.Add temp(0) & "\" & temp(i)
+    '             Next
+    '         End If
+    '         .FileName = ""
+    '     End With
+    '     OpenBox = True
+    '     Exit Function
+    ' ErrHandler:
+    '     LastError = "打开文件失败: " & Err.Number & "#" & Err.Description
+    '     Exit Function
+    ' End Function
+    
+End Module

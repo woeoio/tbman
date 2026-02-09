@@ -1,0 +1,61 @@
+Module ToolsUtf8
+
+    Private Declare PtrSafe Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As LongPtr, ByVal cchWideChar As LongPtr, ByRef lpMultiByteStr As Any, ByVal cchMultiByte As Long, ByVal lpDefaultChar As String, ByVal lpUsedDefaultChar As LongPtr) As Long
+    Private Declare PtrSafe Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As LongPtr, ByVal cchMultiByte As LongPtr, ByVal lpWideCharStr As LongPtr, ByVal cchWideChar As Long) As Long
+    Private Const CP_UTF8 = 65001
+
+    Public Function Decode(ByRef Utf() As Byte) As String
+        Dim lret As Long
+        Dim lLength As Long
+        Dim lBufferSize As Long
+        On Error GoTo errline:
+        lLength = UBound(Utf) + 1
+        If lLength <= 0 Then Exit Function
+        lBufferSize = lLength * 2
+        Decode = String$(lBufferSize, Chr(0))
+        lret = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf(0)), lLength, StrPtr(Decode), lBufferSize)
+        If lret <> 0 Then
+            Decode = Left(Decode, lret)
+        End If
+        Exit Function
+    errline:
+        Decode = ""
+    End Function
+
+    Public Function DecodeToByteArray(ByRef Utf() As Byte) As Byte()
+        Dim lret As Long
+        Dim lLength As Long
+        Dim lBufferSize As Long
+        Dim BT() As Byte
+        lLength = UBound(Utf) + 1
+        If lLength <= 0 Then Exit Function
+        lBufferSize = lLength * 2 - 1
+        ReDim BT(lBufferSize)
+        lret = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf(0)), lLength, VarPtr(BT(0)), lBufferSize + 1)
+        If lret <> 0 Then
+            ReDim Preserve BT(lret - 1)
+            DecodeToByteArray = BT
+        End If
+    End Function
+
+
+    Public Function Encode(ByVal UCS As String) As Byte()
+        Dim lLength As Long
+        Dim lBufferSize As Long
+        Dim lResult As Long
+        Dim abUTF8() As Byte
+        lLength = Len(UCS)
+        If lLength = 0 Then Exit Function
+        lBufferSize = lLength * 3 + 1
+        ReDim abUTF8(lBufferSize - 1)
+        lResult = WideCharToMultiByte(CP_UTF8, 0, StrPtr(UCS), lLength, abUTF8(0), lBufferSize, vbNullString, 0)
+        If lResult <> 0 Then
+            lResult = lResult - 1
+            ReDim Preserve abUTF8(lResult)
+            Encode = abUTF8
+        End If
+    End Function
+
+    
+
+End Module

@@ -1,0 +1,21 @@
+Module mCallBackSubClass
+
+    Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcW" _
+        (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+
+    Public ClassPool As New Collection
+    
+    Public Function Callback(ByVal wHwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+        On Error Resume Next
+        Dim OldWinRet As Long, Key As String = CStr(wHwnd)
+        If ClassPool.Exists(Key) = True Then
+            Dim SC As cSubClass
+            Set SC = ClassPool(Key)
+            '如果不调用CallWindowProc 就相当于吃掉了这个消息
+            OldWinRet = SC.Callback(wMsg, wParam, lParam)
+            If OldWinRet = 0 Then Exit Function
+        End If
+        Callback = CallWindowProc(OldWinRet, wHwnd, wMsg, wParam, lParam)
+    End Function
+
+End Module

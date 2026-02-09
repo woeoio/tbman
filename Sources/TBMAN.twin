@@ -1,0 +1,16 @@
+Module TBMAN
+
+	'TBMAN class call
+    Public Layer As New TBMANLIB.cLayer
+    Public Csv As New TBMANLIB.cCsv
+    Public Ini As New TBMANLIB.cIni
+    Public Json As New TBMANLIB.cJson
+    Public TimerUse As New TBMANLIB.cTimeuse
+    Public Logs As New TBMANLIB.cLogs
+    Public HttpClient As New TBMANLIB.cHttpClient
+    Public SysTray As New TBMANLIB.cSysTray
+    Public Property Get Version() As String
+        Return "v" & App.Major & "." & App.Minor & "." & App.Build
+    End Property
+    
+End Module

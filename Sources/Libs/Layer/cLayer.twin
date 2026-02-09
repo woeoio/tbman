@@ -1,0 +1,8 @@
+Class cLayer
+
+	' add your member fields and procedures here
+    Public Function Toast(ByVal Msg As String) As Long
+        MsgBox(Msg)
+    End Function
+    
+End Class

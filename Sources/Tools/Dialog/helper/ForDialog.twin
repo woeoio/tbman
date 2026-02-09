@@ -1,0 +1,9 @@
+[Description("")]
+[FormDesignerId("3B89E512-84A3-4F99-8596-BA36442198E8")]
+[PredeclaredId]
+Class ForDialog
+
+	Sub New()
+	End Sub
+
+End Class

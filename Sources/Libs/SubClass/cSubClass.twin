@@ -1,0 +1,43 @@
+Class cSubClass
+
+    Public mHWnd As Long
+    Public Event WindowProc(Msg As Long, wParam As Long, lParam As Long, CancelNextCall As Boolean)
+    
+    Dim OrgWinRet As Long
+    Dim NewWinRet As Long
+    Dim ClassPoolKey As String
+    
+    Private Const GWL_WNDPROC = -4
+    
+    Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" _
+        (ByVal hwnd As Long, ByVal nIndex As Long) As Long
+    Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongW" _
+        (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+    
+    Public Sub Hook(ByVal hWnd As Long)
+        If mHWnd > 0 Then Exit Sub 
+        mHWnd = hWnd
+        OrgWinRet = GetWindowLong(mHWnd, GWL_WNDPROC)
+        NewWinRet = SetWindowLong(mHWnd, GWL_WNDPROC, AddressOf mCallBackSubClass.Callback)
+        '
+        ClassPoolKey = CStr(hWnd)
+        mCallBackSubClass.ClassPool.Add Me, ClassPoolKey
+        '
+        Debug.Print "TBMANLIB.cSubClass Hook By " & mHWnd
+    End Sub
+    Public Sub UnHook()
+        Call SetWindowLong(mHWnd, GWL_WNDPROC, OrgWinRet)
+        mCallBackSubClass.ClassPool.Remove ClassPoolKey
+        '
+        Debug.Print "TBMANLIB.cSubClass UnHook From " & mHWnd
+    End Sub
+    
+    Public Function Callback(ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+        On Error Resume Next
+        Dim Cancel As Boolean
+        RaiseEvent WindowProc(Msg, wParam, lParam, Cancel)
+        If Cancel = True Then Exit Function
+        Callback = OrgWinRet
+    End Function
+
+End Class
