@@ -114,7 +114,7 @@ End Sub
 
 Private Sub Class_Terminate()
     On Error Resume Next
-    Inst.Close
+    If Inst.State <> adStateClosed Then Inst.Close
 End Sub
 
 
