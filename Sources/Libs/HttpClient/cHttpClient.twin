@@ -105,8 +105,9 @@ Class cHttpClient
         End If
     End Function
 
-    Public Function FollowRedirect() As cHttpClient
+    Public Function FollowRedirect(Optional RedirectMethod As EnumRequestMethod = 0) As cHttpClient
         '手动跟随重定向，保留当前请求配置（headers、cookies等）
+        '参数 RedirectMethod: 指定 307/308 重定向时使用的请求方法，默认为0（自动处理）
         Set FollowRedirect = Me
         
         Dim RedirectUrl As String: RedirectUrl = GetRedirectUrl()
@@ -124,11 +125,14 @@ Class cHttpClient
                 'GET/HEAD 请求使用 GET 方法，其他方法转为 GET
                 SendGet RedirectUrl
             Case 307, 308
-                '保持原请求方法和 Body 不变
-                Dim Method As EnumRequestMethod
-                Method = ToolsHttp.ParseMethodName(RequestHeaders("X-Original-Method"))
-                If Method = 0 Then Method = ReqGet  '默认 GET
-                Send Method, RedirectUrl
+                '307/308 保持原请求方法和 Body 不变
+                If RedirectMethod <> 0 Then
+                    '开发者指定了方法
+                    Send RedirectMethod, RedirectUrl
+                Else
+                    '默认使用 GET（开发者如需保持原方法，需手动指定）
+                    SendGet RedirectUrl
+                End If
             Case Else
                 '其他 3xx 状态码，默认使用 GET
                 SendGet RedirectUrl

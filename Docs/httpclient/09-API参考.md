@@ -182,14 +182,32 @@ Public Function GetRedirectUrl() As String
 
 #### FollowRedirect
 ```vb
-Public Function FollowRedirect() As cHttpClient
+Public Function FollowRedirect(Optional RedirectMethod As EnumRequestMethod = 0) As cHttpClient
 ```
 手动跟随重定向。
 
+**参数：**
+
+| 参数 | 类型 | 说明 | 默认值 |
+|------|------|------|--------|
+| `RedirectMethod` | EnumRequestMethod | 指定 307/308 重定向时使用的请求方法 | `0`（自动处理） |
+
 根据状态码决定行为：
 - 301/302/303：转为 GET 请求
-- 307/308：保持原请求方法
+- 307/308：默认使用 GET，可通过 `RedirectMethod` 参数指定其他方法
 - 其他：默认使用 GET
+
+**示例：**
+```vb
+' 默认行为：307/308 使用 GET
+http.FollowRedirect
+
+' 指定 307/308 使用 POST（保持原方法）
+http.FollowRedirect(ReqPost)
+
+' 指定使用 PUT
+http.FollowRedirect(ReqPut)
+```
 
 ---
 
