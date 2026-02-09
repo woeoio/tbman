@@ -172,7 +172,7 @@ Class cHttpClient
             '            DoEvents                                                            '允许其他事件处理，防止卡死
             '        Loop
             '
-            If Inst.Status <> 200 Then Err.Raise Inst.Status, , Inst.Status & "#" & Inst.StatusText & "#" & Left(Inst.ResponseText, 1024)
+            If Inst.Status < 200 Or Inst.Status >= 300 Then Err.Raise Inst.Status, , Inst.Status & "#" & Inst.StatusText & "#" & Left(Inst.ResponseText, 1024)
             '解析 返回头
             Call ToolsHttp.ParseKeyValue(Inst.GetAllResponseHeaders(), ResponseHeaders)
         End If
